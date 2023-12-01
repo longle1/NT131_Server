@@ -43,7 +43,7 @@ router.get('/login', async (req, res) => {
 });
 
 
-router.put('/api/status-door', async (req, res) => {
+router.put('/status-door', async (req, res) => {
   try {
     const { username, currentStatus } = req.body;
     const usersRef = admin.database().ref('users');
@@ -59,20 +59,22 @@ router.put('/api/status-door', async (req, res) => {
         user = userRef.update({ statusDoor: status });
 
         res.status(200).json({
-          "status": true
-        })
+          "status": true,
+          "data": user
+        });
         
       } else {
         user = null; 
         res.status(400).json({
-          "status": false
+          "status": false,
+          "data": null
         })
       }
     })
     .catch((error) => {
       res.status(400).json({
           "status": false,
-          "data": "Update Fail"
+          "data": null
         })
     });
   } catch (error) {
@@ -81,7 +83,7 @@ router.put('/api/status-door', async (req, res) => {
 });
 
 // Check-password endpoint
-router.post('/api/check-password', async (req, res) => {
+router.post('/check-password', async (req, res) => {
   try {
     const { uername, password } = req.body;
     
@@ -97,9 +99,9 @@ router.post('/api/check-password', async (req, res) => {
           const userKey = Object.keys(userSnapshot)[0];
           const userData = userSnapshot[userKey];
 
-          let ps = userData.password; 
+          let ps = userData['passwordDoor']; 
           if(ps == currentPs) {
-            res.status(200).json({
+            res.status(201).json({
               "status": true,
               "message": "Correct password"
             });
