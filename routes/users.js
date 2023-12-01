@@ -9,7 +9,7 @@ router.get('/login', async (req, res) => {
 
     const usersRef = admin.database().ref('users');
 
-    const searchUsername = 'newuser';
+    const searchUsername = username;
 
     usersRef.orderByChild('username').equalTo(searchUsername).once('value')
     .then((snapshot) => {
@@ -17,20 +17,23 @@ router.get('/login', async (req, res) => {
       if (userSnapshot) {
         const userKey = Object.keys(userSnapshot)[0];
         const userData = userSnapshot[userKey];
-        res.status(200).json({
-          status: true,
-          "data": userData
-        });
+        if(userData['password'] == password) {
+          res.status(200).json({
+            "data": userData
+          });
+        }else {
+          res.status(400).json({
+            "data": null
+          });
+        }
       } else {
         res.status(400).json({
-          "status": false,
           "data": null
         });
       }
     })
     .catch((error) => {
       res.status(400).json({
-          "status": false,
           "data": null
         });
     });
@@ -54,28 +57,22 @@ router.put('/api/status-door', async (req, res) => {
         
         const status = currentStatus;
         user = userRef.update({ statusDoor: status });
+
+        res.status(200).json({
+          "status": true
+        })
         
       } else {
         user = null; 
-      }
-    })
-    .then(() => {
-      if(user) {
-        res.status(200).json({
-          "status": true,
-          "message": "Update Success"
-        })
-      }else {
         res.status(400).json({
-          "status": false,
-          "message": "Update Fail"
+          "status": false
         })
       }
     })
     .catch((error) => {
       res.status(400).json({
           "status": false,
-          "message": "Update Fail"
+          "data": "Update Fail"
         })
     });
   } catch (error) {
