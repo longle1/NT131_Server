@@ -56,25 +56,25 @@ router.put('/status-door', async (req, res) => {
         const userRef = admin.database().ref(`users/${userKey}`);
         
         const status = currentStatus;
-        user = userRef.update({ statusDoor: status });
+        userRef.update({ statusDoor: status });
 
         res.status(200).json({
           "status": true,
-          "data": user
+          "statusDoor": currentStatus
         });
         
       } else {
         user = null; 
         res.status(400).json({
           "status": false,
-          "data": null
+          "statusDoor": null
         })
       }
     })
     .catch((error) => {
       res.status(400).json({
           "status": false,
-          "data": null
+          "statusDoor": null
         })
     });
   } catch (error) {
@@ -85,7 +85,9 @@ router.put('/status-door', async (req, res) => {
 // Check-password endpoint
 router.post('/check-password', async (req, res) => {
   try {
-    const { uername, password } = req.body;
+    const { username, password } = req.body;
+
+    console.log(req.body)
     
     const usersRef = admin.database().ref('users');
 
@@ -123,6 +125,7 @@ router.post('/check-password', async (req, res) => {
       });
 
   } catch (error) {
+    console.log(error)
     res.status(500).json({ error: 'Internal server error' });
   }
 });
